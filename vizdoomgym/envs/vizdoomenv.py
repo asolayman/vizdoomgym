@@ -27,6 +27,9 @@ CONFIGS = [
 
 
 class VizdoomEnv(gym.Env):
+    ### CUSTOM ADD
+    metadata = {'render.modes': ['human', 'rgb_array']}
+
     def __init__(self, level, **kwargs):
         """
         Base class for Gym interface for ViZDoom. Child classes are defined in vizdoom_env_definitions.py,
@@ -159,10 +162,16 @@ class VizdoomEnv(gym.Env):
             img = self.game.get_state().screen_buffer
             img = np.transpose(img, [1, 2, 0])
 
-            if self.viewer is None:
-                self.viewer = rendering.SimpleImageViewer()
-            self.viewer.imshow(img)
+            ### CUSTOM EDIT
+            if mode == 'rgb_array':
+                return img
+            elif mode == 'human':
+                if self.viewer is None:
+                    self.viewer = rendering.SimpleImageViewer()
+                self.viewer.imshow(img)
         except AttributeError:
+            if mode == 'rgb_array':
+                return np.zeros((240, 320, 3), dtype=np.uint8)
             pass
         
     def close(self):
